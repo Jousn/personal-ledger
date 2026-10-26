@@ -1,0 +1,25 @@
+// Prisma 数据模型 —— 随手记
+// 本地开发使用 SQLite（零配置）；生产环境把 provider 换成 postgresql
+// 并把金额字段改为 Decimal 即可平滑迁移（SQLite 不支持 Decimal）。
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Transaction {
+  id        Int      @id @default(autoincrement())
+  type      String // EXPENSE | INCOME
+  amount    Float // 金额（元）。生产建议 Postgres + Decimal
+  category  String
+  note      String?
+  date      DateTime // 记账日期（按 UTC 日存储，页面以 ISO 日期串展示）
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+}
